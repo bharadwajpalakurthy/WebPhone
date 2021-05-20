@@ -1,7 +1,3 @@
-/* global Peer */
-
-console.log('getting code');
-
 /**
  * VARIABLES
  */
@@ -10,7 +6,7 @@ console.log('getting code');
  * Instantiate a new Peer, passing to it an alphanumeric string as an ID and options obj
  * @type {Peer}
  */
-const peer = new Peer(''+Math.floor(Math.random()*2**18).toString(36).padStart(4,0), {
+ const peer = new Peer(''+Math.floor(Math.random()*2**18).toString(36).padStart(4,0), {
     host: location.hostname,
     debug: 1,
     path: '/myapp'
@@ -48,7 +44,6 @@ function getLocalStream() {
     const constraints = {video: false, audio: true}
 
     navigator.mediaDevices.getUserMedia(constraints).then( stream => {
-        console.log(stream);
         setLocalStream(stream);
     }).catch( err => {
         console.log("u got an error:" + err)
@@ -122,9 +117,8 @@ callBtn.addEventListener('click', function(){
      * when the call is streaming, set the remote stream for the caller
      */
     call.on('stream', function(stream) {
-        showConnectedContent();
-        console.log(peer);
         setRemoteStream(stream);
+        showConnectedContent();
     });
 })
 
@@ -140,7 +134,6 @@ hangUpBtn.addEventListener('click', function (){
  * When the peer has connected to the server, diplay the peer ID
  */
 peer.on('open', function () {
-    console.log('ready to receive cast')
     window.caststatus.textContent = `Your device ID is: ${peer.id}`;
 });
 
@@ -163,7 +156,6 @@ peer.on('call', function(call) {
         call.answer(window.localStream)
         showConnectedContent();
         call.on('stream', function(stream) {
-            console.log('Stream Received');
             setRemoteStream(stream);
         });
         conn.on('close', function (){
@@ -174,8 +166,9 @@ peer.on('call', function(call) {
     }
 });
 
-
-
+/**
+ * Log errors to the console when they occur
+ */
 peer.on('error', err => console.error(err));
 
 getLocalStream();
